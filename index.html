@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>size4zero.com — the degenerate trader experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #E8392A;
+    --red-dark: #9B1F14;
+    --red-dim: #2a0f0b;
+    --green: #00FF94;
+    --green-dim: #003d22;
+    --amber: #F5A623;
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #1a1a1a;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8e8e0;
+    --muted: #666660;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ticker tape */
+  .ticker-wrap {
+    background: var(--red);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 6px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .ticker {
+    display: inline-block;
+    animation: ticker 28s linear infinite;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.05em;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* layout */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* hero */
+  .hero {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(64px, 12vw, 120px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+  .hero-title span { color: var(--red); }
+  .hero-sub {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.8;
+  }
+
+  /* nav dots */
+  .nav {
+    display: flex;
+    gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .nav a {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nav a:hover { color: var(--text); }
+
+  /* sections */
+  .section {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 48px;
+    letter-spacing: 0.03em;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .section-desc {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 36px;
+    max-width: 560px;
+  }
+
+  /* museum cards */
+  .museum-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .museum-card {
+    background: var(--bg2);
+    padding: 24px;
+    transition: background 0.15s;
+  }
+  .museum-card:hover { background: var(--bg3); }
+  .museum-date {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .museum-amount {
+    font-family: var(--font-display);
+    font-size: 36px;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .museum-tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid var(--red-dark);
+    color: var(--red);
+    margin-bottom: 12px;
+  }
+  .museum-epitaph {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.6;
+  }
+  .museum-footer {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* quote machine */
+  .quote-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 48px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .quote-box::before {
+    content: '"';
+    font-family: var(--font-display);
+    font-size: 240px;
+    color: rgba(232,57,42,0.06);
+    position: absolute;
+    top: -40px;
+    left: 10px;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .quote-text {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    position: relative;
+    min-height: 60px;
+    transition: opacity 0.2s;
+  }
+  .quote-source {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 32px;
+    transition: opacity 0.2s;
+  }
+  .btn {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 28px;
+    border: 1px solid var(--red);
+    color: var(--red);
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn:hover {
+    background: var(--red);
+    color: #fff;
+  }
+
+  /* survival guide */
+  .steps { display: flex; flex-direction: column; }
+  .step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step:first-child { border-top: 1px solid var(--border); }
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--border);
+    padding: 20px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+  }
+  .step-content {
+    padding: 20px 24px;
+  }
+  .step-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+  .step-body {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .step-outcome {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    margin-top: 8px;
+  }
+  .outcome-bad { border: 1px solid var(--red-dark); color: var(--red); }
+  .outcome-ok { border: 1px solid #2a3a1a; color: #6aaa44; }
+
+  /* grief counselor */
+  .chat-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+  }
+  .chat-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .chat-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .chat-header-text {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .chat-messages {
+    padding: 20px;
+    min-height: 200px;
+    max-height: 360px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); }
+  .msg {
+    max-width: 78%;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .msg-bot {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    color: var(--text);
+  }
+  .msg-user {
+    background: var(--red-dim);
+    border: 1px solid var(--red-dark);
+    align-self: flex-end;
+    color: var(--text);
+  }
+  .msg-typing {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .chat-input-row {
+    display: flex;
+    border-top: 1px solid var(--border);
+  }
+  .chat-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 14px 20px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+  }
+  .chat-input::placeholder { color: var(--muted); }
+  .chat-send {
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--border);
+    padding: 14px 20px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .chat-send:hover { background: var(--red-dim); }
+
+  /* footer */
+  .footer {
+    padding: 40px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 12px;
+  }
+  .footer-left {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  .footer-right {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 600px) {
+    .hero-title { font-size: 72px; }
+    .section-title { font-size: 36px; }
+    .quote-box { padding: 32px 24px; }
+    .quote-text { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ticker -->
+<div class="ticker-wrap">
+  <span class="ticker">
+    SPX 0.00 &nbsp;▼&nbsp; YOUR ACCOUNT 0.00 &nbsp;▼&nbsp; VIX ∞ &nbsp;▲&nbsp; STOPS: OPTIONAL &nbsp;—&nbsp; PUTS: OVERRATED &nbsp;—&nbsp; THETA: RUTHLESS &nbsp;—&nbsp; DELTA: IRRELEVANT &nbsp;—&nbsp; ACCOUNT STATUS: CRITICAL &nbsp;—&nbsp; FOMC: TODAY, ALWAYS &nbsp;—&nbsp; SPX 0.00 &nbsp;▼&nbsp; YOUR ACCOUNT 0.00 &nbsp;▼&nbsp; VIX ∞ &nbsp;▲&nbsp; STOPS: OPTIONAL &nbsp;—&nbsp; PUTS: OVERRATED &nbsp;—&nbsp; THETA: RUTHLESS &nbsp;—&nbsp; DELTA: IRRELEVANT &nbsp;—&nbsp; ACCOUNT STATUS: CRITICAL &nbsp;—&nbsp; FOMC: TODAY, ALWAYS &nbsp;—&nbsp;
+  </span>
+</div>
+
+<div class="container">
+
+  <!-- hero -->
+  <div class="hero">
+    <p class="hero-label">est. expiry day</p>
+    <h1 class="hero-title">SIZE<br><span>4</span><br>ZERO</h1>
+    <p class="hero-sub">A comprehensive resource for traders who have achieved, or are rapidly approaching, the ultimate position size.</p>
+  </div>
+
+  <!-- nav -->
+  <nav class="nav">
+    <a href="#museum">01 — Museum</a>
+    <a href="#wisdom">02 — Wisdom</a>
+    <a href="#guide">03 — Survival guide</a>
+    <a href="#grief">04 — Grief counselor</a>
+  </nav>
+
+  <!-- museum -->
+  <div class="section" id="museum">
+    <p class="section-label">01</p>
+    <h2 class="section-title">Account Balance Museum</h2>
+    <p class="section-desc">A permanent collection honoring portfolios lost in the line of duty. Donations accepted daily at market open.</p>
+    <div class="museum-grid">
+      <div class="museum-card">
+        <p class="museum-date">2019 — 2019</p>
+        <p class="museum-amount">$84,000</p>
+        <span class="museum-tag">0DTE SPX calls</span>
+        <p class="museum-epitaph">"He bought the open. He held through lunch. He is no longer with us."</p>
+      </div>
+      <div class="museum-card">
+        <p class="museum-date">2021 — 2021</p>
+        <p class="museum-amount">$230,000</p>
+        <span class="museum-tag">GME puts</span>
+        <p class="museum-epitaph">"She was certain. She was early. She was wrong. Same thing."</p>
+      </div>
+      <div class="museum-card">
+        <p class="museum-date">2022 — 2022</p>
+        <p class="museum-amount">$12,400</p>
+        <span class="museum-tag">Naked calls</span>
+        <p class="museum-epitaph">"A small account with a big dream. The dream expired worthless. Unlike the pain."</p>
+      </div>
+      <div class="museum-card">
+        <p class="museum-date">2024 — 2024</p>
+        <p class="museum-amount">$47,000</p>
+        <span class="museum-tag">FOMC spreads</span>
+        <p class="museum-epitaph">"He knew the Fed announcement was at 2pm. He forgot the market moves at 1:58."</p>
+      </div>
+      <div class="museum-card">
+        <p class="museum-date">2023 — 2023</p>
+        <p class="museum-amount">$9,200</p>
+        <span class="museum-tag">Revenge trade</span>
+        <p class="museum-epitaph">"She lost $800 and needed it back immediately. She got it back immediately, and then some."</p>
+      </div>
+      <div class="museum-card">
+        <p class="museum-date">2025 — 2025</p>
+        <p class="museum-amount">$310,000</p>
+        <span class="museum-tag">Size escalation</span>
+        <p class="museum-epitaph">"He had a system. The system worked great at $5k. He saw no reason it wouldn't scale."</p>
+      </div>
+    </div>
+    <p class="museum-footer">To submit your account for memorial consideration, simply finish blowing it up. We'll take it from there.</p>
+  </div>
+
+  <!-- wisdom -->
+  <div class="section" id="wisdom">
+    <p class="section-label">02</p>
+    <h2 class="section-title">Trading Wisdom</h2>
+    <p class="section-desc">Insights handed down through generations of degenerate traders. Each one earned the hard way.</p>
+    <div class="quote-box">
+      <div class="quote-text" id="quote">"The trend is your friend, until it ends, and then you're fucked."</div>
+      <div class="quote-source" id="attribution">— Ancient SPX proverb</div>
+      <button class="btn" onclick="newQuote()">Another one</button>
+    </div>
+  </div>
+
+  <!-- survival guide -->
+  <div class="section" id="guide">
+    <p class="section-label">03</p>
+    <h2 class="section-title">The 0DTE Survival Guide</h2>
+    <p class="section-desc">A serious, professional guide for the serious, professional trader. Follow every step carefully.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <p class="step-title">Wake up</p>
+          <p class="step-body">Check futures. They are down. This is fine. Everything is fine. Make coffee. Check futures again. Still down. More coffee.</p>
+          <span class="step-outcome outcome-ok">Status: alive</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <p class="step-title">Check the VIX</p>
+          <p class="step-body">VIX is elevated. This means either buy puts or buy calls. You pick calls. Bold. Visionary, even.</p>
+          <span class="step-outcome outcome-ok">Status: optimistic</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <p class="step-title">Wait for your level</p>
+          <p class="step-body">Price approaches your support level. It hesitates. You hesitate. It breaks through. You do not hesitate to buy more.</p>
+          <span class="step-outcome outcome-bad">Status: averaging down</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <p class="step-title">Set your stop loss</p>
+          <p class="step-body">Lol.</p>
+          <span class="step-outcome outcome-bad">Status: no stop loss</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <p class="step-title">Manage the position</p>
+          <p class="step-body">It's down 60%. This is temporary. The market is wrong. You are right. You have been right before. Probably.</p>
+          <span class="step-outcome outcome-bad">Status: bag holding</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <p class="step-title">End of day</p>
+          <p class="step-body">Your contracts expired worthless at 4:00pm EST. You have learned a valuable lesson about discipline, risk management, and the passage of time. See you tomorrow at step 1.</p>
+          <span class="step-outcome outcome-bad">Status: size4zero</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- grief counselor -->
+  <div class="section" id="grief">
+    <p class="section-label">04</p>
+    <h2 class="section-title">SPX Grief Counselor</h2>
+    <p class="section-desc">A safe space to process what happened. We already know what happened. Tell us anyway.</p>
+    <div class="chat-wrap">
+      <div class="chat-header">
+        <div class="chat-dot"></div>
+        <span class="chat-header-text">Dr. Zero — Licensed Grief Specialist (not licensed)</span>
+      </div>
+      <div class="chat-messages" id="chat">
+        <div class="msg msg-bot">Hello. Tell me what happened. I'm here for you. Professionally.</div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" class="chat-input" id="grief-input" placeholder="Describe your trade..." autocomplete="off" />
+        <button class="chat-send" onclick="sendGrief()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="footer">
+    <span class="footer-left">SIZE4ZERO.COM</span>
+    <span class="footer-right">Not financial advice. Clearly. &nbsp;|&nbsp; All losses are real.</span>
+  </div>
+
+</div>
+
+<script>
+  const quotes = [
+    ["The trend is your friend, until it ends, and then you're fucked.", "Ancient SPX proverb"],
+    ["Your stop loss is a suggestion. A weak one.", "Size4Zero Trading Academy"],
+    ["He who sells covered calls deserves exactly what happens next.", "Unknown, probably retired"],
+    ["Buy the dip. The dip buys back.", "Tao of the 0DTE"],
+    ["Risk management is for people who plan to trade again.", "Reddit, circa always"],
+    ["The market can stay irrational longer than you can stay solvent. It will.", "Keynes (updated edition)"],
+    ["If your thesis requires the Fed to cooperate, your thesis is wrong.", "Size4Zero Research Desk"],
+    ["I'm not down. I'm in drawdown. There's a difference. There really is.", "Anonymous, 2:47pm Friday"],
+    ["Averaging down is just dollar cost averaging with worse vibes.", "Modern Portfolio Theory"],
+    ["It's not a loss until you close it. That's why I never close it.", "Size4Zero Wisdom Series"],
+    ["FOMC day is just a normal day with extra steps to zero.", "Senior Analyst, Size4Zero"],
+    ["Theta is just rent. I choose not to pay rent.", "Free spirit, currently homeless"],
+    ["The second contract was never the problem. It was the fifth.", "Survivors' Testimony, Vol. 3"],
+    ["I had a system. The system had me.", "Epitaph, Account #4471"],
+    ["Stops are for people who don't believe in their conviction.", "Last words, many times"],
+    ["My edge is discipline. Today was an exception.", "Daily journal, every day"],
+  ];
+
+  let lastQ = -1;
+  function newQuote() {
+    const q = document.getElementById('quote');
+    const a = document.getElementById('attribution');
+    q.style.opacity = '0';
+    a.style.opacity = '0';
+    setTimeout(() => {
+      let i;
+      do { i = Math.floor(Math.random() * quotes.length); } while (i === lastQ);
+      lastQ = i;
+      q.textContent = '\u201c' + quotes[i][0] + '\u201d';
+      a.textContent = '\u2014 ' + quotes[i][1];
+      q.style.opacity = '1';
+      a.style.opacity = '1';
+    }, 200);
+  }
+
+  const responses = [
+    "That sounds incredibly painful. Have you considered doing it again tomorrow?",
+    "I hear you. The market was wrong. You were early. Same thing.",
+    "That's a lot to process. On the bright side, at least it's a tax event.",
+    "Wow. And you held through all of that? Respect. Misplaced, but respect.",
+    "I'm so sorry. Would it help to talk about your next trade? Please say no.",
+    "That's not a loss. That's an expensive lesson. A very expensive lesson. Possibly your most expensive.",
+    "You know what they say: live to trade another day. You technically still can.",
+    "I've heard this story before. It never ends differently. Yet here we are.",
+    "Have you tried turning your position off and back on again?",
+    "On a scale of 1 to size4zero, how are you feeling right now?",
+    "The market makers saw you coming. They want you to know that.",
+    "Your entry was fine. Your exit was a crime against yourself.",
+    "The second contract was unnecessary. The third was a cry for help.",
+    "This is a safe space. Your broker's margin desk is also a safe space, but less comforting.",
+    "Grief has five stages. For traders, all five are revenge trading.",
+    "I'm going to refer you to our advanced program. It's called: not trading on Fridays.",
+  ];
+
+  let lastR = -1;
+
+  function sendGrief() {
+    const input = document.getElementById('grief-input');
+    const chat = document.getElementById('chat');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const userMsg = document.createElement('div');
+    userMsg.className = 'msg msg-user';
+    userMsg.textContent = text;
+    chat.appendChild(userMsg);
+    input.value = '';
+    chat.scrollTop = chat.scrollHeight;
+
+    const typing = document.createElement('div');
+    typing.className = 'msg msg-typing';
+    typing.id = 'typing';
+    typing.textContent = 'Dr. Zero is processing your trauma...';
+    chat.appendChild(typing);
+    chat.scrollTop = chat.scrollHeight;
+
+    setTimeout(() => {
+      const t = document.getElementById('typing');
+      if (t) t.remove();
+      let i;
+      do { i = Math.floor(Math.random() * responses.length); } while (i === lastR);
+      lastR = i;
+      const botMsg = document.createElement('div');
+      botMsg.className = 'msg msg-bot';
+      botMsg.textContent = responses[i];
+      chat.appendChild(botMsg);
+      chat.scrollTop = chat.scrollHeight;
+    }, 900);
+  }
+
+  document.getElementById('grief-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendGrief();
+  });
+</script>
+</body>
+</html>
