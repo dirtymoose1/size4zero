@@ -389,6 +389,63 @@
   }
   .chat-send:hover { background: var(--red-dim); }
 
+  /* newsletter */
+  .newsletter-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 48px 40px;
+    text-align: center;
+  }
+  .newsletter-fine-print {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 12px;
+    letter-spacing: 0.03em;
+    font-style: italic;
+  }
+  .newsletter-form {
+    display: flex;
+    gap: 0;
+    max-width: 420px;
+    margin: 28px auto 0;
+  }
+  .newsletter-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-right: none;
+    padding: 12px 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+  }
+  .newsletter-input::placeholder { color: var(--muted); opacity: 0.5; }
+  .newsletter-input:focus { border-color: var(--red); }
+  .newsletter-submit {
+    background: transparent;
+    border: 1px solid var(--red);
+    padding: 12px 24px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .newsletter-submit:hover { background: var(--red); color: #fff; }
+  .newsletter-submit:disabled { opacity: 0.5; cursor: default; }
+  .newsletter-msg {
+    margin-top: 14px;
+    font-size: 12px;
+    min-height: 18px;
+    letter-spacing: 0.05em;
+  }
+  .newsletter-msg.success { color: var(--green); }
+  .newsletter-msg.error { color: var(--red); }
+
   /* footer */
   .footer {
     padding: 40px 0;
@@ -442,6 +499,7 @@
     <a href="#museum">02 — Museum</a>
     <a href="#guide">03 — Survival guide</a>
     <a href="#grief">04 — Grief counselor</a>
+    <a href="#newsletter">05 — Newsletter</a>
   </nav>
 
   <!-- wisdom -->
@@ -579,6 +637,23 @@
     </div>
   </div>
 
+  <!-- newsletter -->
+  <div class="section" id="newsletter">
+    <p class="section-label">05</p>
+    <h2 class="section-title">The Newsletter</h2>
+    <p class="section-desc">Dispatches from the floor. Trade recaps, hot takes, and the occasional cry for help — delivered directly to your inbox before market open.</p>
+    <div class="newsletter-box">
+      <p style="font-family: var(--font-display); font-size: 28px; letter-spacing: 0.05em; margin-bottom: 8px;">SUBSCRIBE TO LOSE TOGETHER</p>
+      <p style="font-size: 13px; color: var(--muted); max-width: 400px; margin: 0 auto;">Your email is safer with us than your capital ever was. We will never sell it, spam it, or use it to margin call you. Probably.</p>
+      <form class="newsletter-form" onsubmit="submitEmail(event)">
+        <input type="email" class="newsletter-input" id="email-input" placeholder="your@email.com" required />
+        <button type="submit" class="newsletter-submit" id="email-btn">Subscribe</button>
+      </form>
+      <div class="newsletter-msg" id="newsletter-msg"></div>
+      <p class="newsletter-fine-print">By subscribing you acknowledge that you have made worse decisions than this. Unsubscribe anytime — we won't take it personally, unlike your last trade.</p>
+    </div>
+  </div>
+
   <!-- footer -->
   <div class="footer">
     <span class="footer-left">SIZE4ZERO.COM</span>
@@ -712,6 +787,40 @@
   document.getElementById('grief-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') sendGrief();
   });
+
+  const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+  async function submitEmail(e) {
+    e.preventDefault();
+    const input = document.getElementById('email-input');
+    const btn = document.getElementById('email-btn');
+    const msg = document.getElementById('newsletter-msg');
+    const email = input.value.trim();
+    if (!email) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    msg.textContent = '';
+    msg.className = 'newsletter-msg';
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      input.value = '';
+      msg.textContent = 'You\'re in. We\'ll be in touch. Probably on a red day.';
+      msg.classList.add('success');
+      btn.textContent = 'Subscribed';
+    } catch {
+      msg.textContent = 'Something went wrong. Like your last trade.';
+      msg.classList.add('error');
+      btn.disabled = false;
+      btn.textContent = 'Subscribe';
+    }
+  }
 </script>
 </body>
 </html>
